@@ -102,23 +102,23 @@ def wait_for_adapter(bluez_adapter, callback, timeout=1000):
     def on_prop_change(key, value):
         if key == "Powered" and value:
             gobject.source_remove(source)
-            bluez_adapter.UnHandleSignal(on_prop_change, "PropertyChanged")
+            bluez_adapter.unhandle_signal(on_prop_change, "PropertyChanged")
             callback()
 
     def on_timeout():
-        bluez_adapter.UnHandleSignal(on_prop_change, "PropertyChanged")
+        bluez_adapter.unhandle_signal(on_prop_change, "PropertyChanged")
         gobject.source_remove(source)
         dprint(YELLOW("Warning:"),
                "Bluez didn't provide 'Powered' property in a reasonable timeout\nAssuming adapter is ready")
         callback()
 
-    props = bluez_adapter.GetProperties()
+    props = bluez_adapter.get_properties()
     if props["Address"] != "00:00:00:00:00:00":
         callback()
         return
 
     source = gobject.timeout_add(timeout, on_timeout)
-    bluez_adapter.HandleSignal(on_prop_change, "PropertyChanged")
+    bluez_adapter.handle_signal(on_prop_change, "PropertyChanged")
 
 
 def startup_notification(name, desc=None, bin_name=None, icon=None):
